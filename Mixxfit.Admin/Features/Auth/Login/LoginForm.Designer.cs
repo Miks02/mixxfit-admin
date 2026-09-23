@@ -30,6 +30,7 @@ namespace Mixxfit.Admin.Features.Auth
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoginForm));
             pbLogo = new PictureBox();
             pnlEmail = new Panel();
             tbEmail = new TextBox();
@@ -160,6 +161,7 @@ namespace Mixxfit.Admin.Features.Auth
             Controls.Add(pnlEmail);
             Controls.Add(pbLogo);
             FormBorderStyle = FormBorderStyle.FixedSingle;
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimumSize = new Size(416, 547);
             Name = "LoginForm";

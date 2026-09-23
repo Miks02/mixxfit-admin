@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             pnlHeader = new Panel();
             btnLogout = new Mixxfit.Admin.Common.Controls.RoundedButton();
             lblTitle = new Label();
@@ -94,10 +95,11 @@
             ClientSize = new Size(1728, 876);
             Controls.Add(pnlContent);
             Controls.Add(pnlHeader);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MinimumSize = new Size(1280, 760);
             Name = "Main";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "MixxFit";
+            Text = "MixxFit Administration Tool";
             Shown += Main_Shown;
             pnlHeader.ResumeLayout(false);
             pnlHeader.PerformLayout();

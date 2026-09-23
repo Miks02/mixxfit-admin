@@ -2,14 +2,17 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net10.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
+    <ApplicationIcon>MixxFit-CircleLogo.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <Content Include="favicon.ico" />
+    <Content Include="MixxFit-CircleLogo.ico" />
   </ItemGroup>
 
   <ItemGroup>
