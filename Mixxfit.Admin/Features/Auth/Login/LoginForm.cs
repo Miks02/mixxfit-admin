@@ -85,7 +85,7 @@ namespace Mixxfit.Admin.Features.Auth
                     MessageBoxIcon.Error);
                 return;
             }
-            if (problemDetails.ErrorCode.Equals("Auth.LoginFailed"))
+            if (problemDetails.ErrorCode == "Auth.LoginFailed")
             {
                 MessageBox.Show("Login failed. Please check your email and password.", "Validation error", MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
