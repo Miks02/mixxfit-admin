@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using Mixxfit.Admin.Common;
+using Mixxfit.Admin.Common.Controls;
 using Mixxfit.Admin.Common.Enums;
 using Mixxfit.Admin.Common.Errors;
 
@@ -18,6 +19,10 @@ namespace Mixxfit.Admin.Features.Dashboard
         private int _loadTicket;
         private bool _loadedDeleted;
         private int _page = 1;
+        private bool _hasPreviousPage;
+        private bool _hasNextPage;
+        private bool _busy;
+        private AdminDashboardUserDto? _selectedUser;
 
         public DashboardView()
         {
@@ -73,8 +78,15 @@ namespace Mixxfit.Admin.Features.Dashboard
                     return;
                 }
 
+                // The last item of the last page was just removed: step back to the new last page.
+                if (data!.Items.Count == 0 && data.TotalPages > 0 && requestedPage > data.TotalPages)
+                {
+                    await LoadPagedUsers(data.TotalPages);
+                    return;
+                }
+
                 _loadedDeleted = isDeleted;
-                _page = data!.Page;
+                _page = data.Page;
                 RefillDataGrid(data.Items);
                 UpdatePager(data);
             }
@@ -110,8 +122,9 @@ namespace Mixxfit.Admin.Features.Dashboard
 
             lblPage.Text = $"Page {result.Page} of {totalPages}";
             lblTotal.Text = $"Showing {result.Items.Count} of {result.TotalCount:N0} users";
-            btnPrev.Enabled = result.HasPreviousPage;
-            btnNext.Enabled = result.HasNextPage;
+            _hasPreviousPage = result.HasPreviousPage;
+            _hasNextPage = result.HasNextPage;
+            ApplyButtonStates();
         }
 
         private async void btnPrev_Click(object? sender, EventArgs e)
@@ -126,17 +139,108 @@ namespace Mixxfit.Admin.Features.Dashboard
 
         private async void btnRefetch_Click(object? sender, EventArgs e)
         {
-            btnRefetch.Enabled = false;
+            SetBusy(btnRefetch);
             try
             {
-                await LoadDataAsync();
-                await LoadPagedUsers();
+                await ReloadAsync();
             }
             finally
             {
-                btnRefetch.Enabled = true;
+                SetBusy(null);
             }
         }
+
+        private async void btnActivate_Click(object? sender, EventArgs e)
+        {
+            if (_selectedUser is not { } user) return;
+
+            await RunUserActionAsync(btnActivate, () => _dashboard.UnsuspendUser(user.Id),
+                $"Activate {user.Email}?", $"{user.Email} has been activated.");
+        }
+
+        private async void btnDeactivate_Click(object? sender, EventArgs e)
+        {
+            if (_selectedUser is not { } user) return;
+
+            await RunUserActionAsync(btnDeactivate, () => _dashboard.SuspendUser(user.Id),
+                $"Deactivate {user.Email}?", $"{user.Email} has been deactivated.");
+        }
+
+        private async void btnDelete_Click(object? sender, EventArgs e)
+        {
+            if (_selectedUser is not { } user) return;
+
+            await RunUserActionAsync(btnDelete, () => _dashboard.DeleteUserAsync(user.Id),
+                $"Delete {user.Email}?", $"{user.Email} has been deleted.");
+        }
+
+        /// <summary>
+        /// Asks for confirmation, then runs a moderation call with the triggering button spinning
+        /// and every other button disabled, refreshes stats and the user list and reports the outcome.
+        /// </summary>
+        private async Task RunUserActionAsync(
+            RoundedButton trigger, Func<Task<ProblemDetails?>> action, string confirmMessage, string successMessage)
+        {
+            var confirm = MessageBox.Show(confirmMessage, "Confirm",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+            if (confirm != DialogResult.Yes) return;
+
+            ProblemDetails? problem;
+
+            SetBusy(trigger);
+            try
+            {
+                problem = await action();
+                if (problem is null)
+                    await ReloadAsync();
+            }
+            finally
+            {
+                SetBusy(null);
+            }
+
+            if (problem is not null)
+                MessageBox.Show(ErrorCatalog.Describe(problem), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            else
+                MessageBox.Show(successMessage, "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private async Task ReloadAsync()
+        {
+            await LoadDataAsync();
+            await LoadPagedUsers();
+        }
+
+        /// <summary>
+        /// Marks <paramref name="active"/> as the working button (spinner) and disables all
+        /// buttons but the log out one; pass null to finish.
+        /// </summary>
+        private void SetBusy(RoundedButton? active)
+        {
+            _busy = active is not null;
+
+            foreach (var button in new[] { btnActivate, btnDeactivate, btnDelete, btnRefetch, btnPrev, btnNext })
+                button.Busy = ReferenceEquals(button, active);
+
+            ApplyButtonStates();
+        }
+
+        /// <summary>Single place that decides which buttons are clickable.</summary>
+        private void ApplyButtonStates()
+        {
+            var user = _selectedUser;
+            var canModerate = !_busy && user is not null && !IsDeleted(user);
+
+            btnActivate.Enabled = canModerate && user!.AccountStatus == AccountStatus.Suspended;
+            btnDeactivate.Enabled = canModerate && user!.AccountStatus == AccountStatus.Active;
+            btnDelete.Enabled = canModerate;
+
+            btnPrev.Enabled = !_busy && _hasPreviousPage;
+            btnNext.Enabled = !_busy && _hasNextPage;
+            btnRefetch.Enabled = !_busy;
+        }
+
+        private bool IsDeleted(AdminDashboardUserDto user) => user.DeletedAt is not null || _loadedDeleted;
 
         private void tbSearch_TextChanged(object? sender, EventArgs e)
         {
@@ -187,7 +291,8 @@ namespace Mixxfit.Admin.Features.Dashboard
 
         private void ShowUserOptions(AdminDashboardUserDto user)
         {
-            var isDeleted = user.DeletedAt is not null || _loadedDeleted;
+            _selectedUser = user;
+            var isDeleted = IsDeleted(user);
 
             lblName.Text = user.FullName;
             lblEmail.Text = user.Email;
@@ -197,9 +302,7 @@ namespace Mixxfit.Admin.Features.Dashboard
             lblDeleted.Visible = isDeleted;
             lblDeleted.Text = user.DeletedAt?.ToLocalTime().ToString("dd MMM yyyy, HH:mm") ?? None;
 
-            btnActivate.Enabled = !isDeleted && user.AccountStatus == AccountStatus.Suspended;
-            btnDeactivate.Enabled = !isDeleted && user.AccountStatus == AccountStatus.Active;
-            btnDelete.Enabled = !isDeleted;
+            ApplyButtonStates();
 
             lblSelectUser.Visible = false;
             gbUserOptions.Visible = true;
@@ -207,6 +310,9 @@ namespace Mixxfit.Admin.Features.Dashboard
 
         private void HideUserOptions()
         {
+            _selectedUser = null;
+            ApplyButtonStates();
+
             gbUserOptions.Visible = false;
             lblSelectUser.Visible = true;
         }

@@ -639,6 +639,7 @@ namespace Mixxfit.Admin.Features.Dashboard
             btnActivate.TabIndex = 0;
             btnActivate.Text = "Activate user";
             btnActivate.UseVisualStyleBackColor = false;
+            btnActivate.Click += btnActivate_Click;
             //
             // btnDeactivate
             //
@@ -658,6 +659,7 @@ namespace Mixxfit.Admin.Features.Dashboard
             btnDeactivate.TabIndex = 1;
             btnDeactivate.Text = "Deactivate user";
             btnDeactivate.UseVisualStyleBackColor = false;
+            btnDeactivate.Click += btnDeactivate_Click;
             //
             // btnDelete
             //
@@ -677,6 +679,7 @@ namespace Mixxfit.Admin.Features.Dashboard
             btnDelete.TabIndex = 2;
             btnDelete.Text = "Delete user";
             btnDelete.UseVisualStyleBackColor = false;
+            btnDelete.Click += btnDelete_Click;
             //
             // lblSelectUser
             //

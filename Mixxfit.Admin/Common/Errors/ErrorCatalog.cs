@@ -19,6 +19,9 @@ namespace Mixxfit.Admin.Common.Errors
                 "Auth.AccountLocked" => "This account is locked. Try again later.",
                 "Admin.NotFound" => "Admin not found.",
                 "User.NotFound" => "User not found.",
+                "User.AlreadySuspended" => "This user is already suspended.",
+                "User.AlreadyActive" => "This user is already active.",
+                "User.AlreadyDeleted" => "This user has already been deleted.",
                 _ => null
             };
 

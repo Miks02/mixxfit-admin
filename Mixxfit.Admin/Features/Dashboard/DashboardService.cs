@@ -7,20 +7,37 @@ namespace Mixxfit.Admin.Features.Dashboard
     {
         private const int MaxPageSize = 100;
 
-        public Task<(AdminDashboardResponse? Data, ProblemDetails? Problem)> GetAdminDashboardAsync()
+        public async Task<(AdminDashboardResponse? Data, ProblemDetails? Problem)> GetAdminDashboardAsync()
         {
-            return apiClient.SendAsync<AdminDashboardResponse>(
+            return await apiClient.SendAsync<AdminDashboardResponse>(
                 HttpMethod.Get, "admin/dashboard");
         }
 
-        public Task<(PagedResult<AdminDashboardUserDto>? Data, ProblemDetails? Problem)> GetAdminDashboardUsersAsync(
-            int page = 1, int pageSize = 30, string search = "", string sort = "", bool isDeleted = false)
+        public async Task<(PagedResult<AdminDashboardUserDto>? Data, ProblemDetails? Problem)>
+            GetAdminDashboardUsersAsync(
+                int page = 1, int pageSize = 30, string search = "", string sort = "", bool isDeleted = false)
         {
             page = Math.Max(page, 1);
             pageSize = Math.Clamp(pageSize, 1, MaxPageSize);
 
-            return apiClient.SendAsync<PagedResult<AdminDashboardUserDto>>(
-                HttpMethod.Get, $"admin/users?page={page}&pageSize={pageSize}&search={Uri.EscapeDataString(search)}&sort={sort}&isDeleted={isDeleted}");
+            return await apiClient.SendAsync<PagedResult<AdminDashboardUserDto>>(
+                HttpMethod.Get,
+                $"admin/users?page={page}&pageSize={pageSize}&search={Uri.EscapeDataString(search)}&sort={sort}&isDeleted={isDeleted}");
+        }
+
+        public async Task<ProblemDetails?> DeleteUserAsync(string userId)
+        {
+            return await apiClient.SendAsync(HttpMethod.Delete, $"admin/users/{userId}");
+        }
+
+        public async Task<ProblemDetails?> SuspendUser(string userId)
+        {
+            return await apiClient.SendAsync(HttpMethod.Post, $"admin/users/{userId}/suspend");
+        }
+
+        public async Task<ProblemDetails?> UnsuspendUser(string userId)
+        {
+            return await apiClient.SendAsync(HttpMethod.Post, $"admin/users/{userId}/unsuspend");
         }
     }
 }

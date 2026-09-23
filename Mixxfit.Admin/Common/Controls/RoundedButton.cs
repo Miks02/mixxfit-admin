@@ -12,6 +12,33 @@ namespace Mixxfit.Admin.Common.Controls
     {
         private bool _isHovered;
         private bool _isPressed;
+        private bool _busy;
+        private int _spinAngle;
+        private readonly System.Windows.Forms.Timer _spinTimer = new() { Interval = 40 };
+
+        private const int SpinnerSize = 16;
+        private const int SpinnerGap = 8;
+
+        /// <summary>
+        /// Shows a spinner next to the text. A busy button keeps its normal colours even when
+        /// disabled, so the caller can disable it (to block clicks) and still show it as "working".
+        /// </summary>
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public bool Busy
+        {
+            get => _busy;
+            set
+            {
+                if (_busy == value) return;
+                _busy = value;
+
+                if (value) _spinTimer.Start();
+                else _spinTimer.Stop();
+
+                Invalidate();
+            }
+        }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public int CornerRadius { get; set; } = 10;
@@ -33,6 +60,18 @@ namespace Mixxfit.Admin.Common.Controls
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.ResizeRedraw, true);
             FlatStyle = FlatStyle.Flat;
             FlatAppearance.BorderSize = 0;
+
+            _spinTimer.Tick += (_, _) =>
+            {
+                _spinAngle = (_spinAngle + 30) % 360;
+                Invalidate();
+            };
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing) _spinTimer.Dispose();
+            base.Dispose(disposing);
         }
 
         protected override void OnMouseEnter(EventArgs e)
@@ -81,7 +120,7 @@ namespace Mixxfit.Admin.Common.Controls
             Color fillColor;
             Color textColor;
 
-            if (!Enabled)
+            if (!Enabled && !_busy)
             {
                 fillColor = DisabledBackColor;
                 textColor = DisabledForeColor;
@@ -100,8 +139,24 @@ namespace Mixxfit.Admin.Common.Controls
             using var brush = new SolidBrush(fillColor);
             g.FillPath(brush, path);
 
-            TextRenderer.DrawText(g, Text, Font, ClientRectangle, textColor,
-                TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+            if (!_busy)
+            {
+                TextRenderer.DrawText(g, Text, Font, ClientRectangle, textColor,
+                    TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+                return;
+            }
+
+            var textWidth = TextRenderer.MeasureText(g, Text, Font, Size.Empty, TextFormatFlags.NoPadding).Width;
+            var startX = (Width - (SpinnerSize + SpinnerGap + textWidth)) / 2;
+
+            using (var pen = new Pen(textColor, 2.5f) { StartCap = LineCap.Round, EndCap = LineCap.Round })
+            {
+                g.DrawArc(pen, startX, (Height - SpinnerSize) / 2, SpinnerSize, SpinnerSize, _spinAngle, 270);
+            }
+
+            var textRect = new Rectangle(startX + SpinnerSize + SpinnerGap, 0, textWidth + 4, Height);
+            TextRenderer.DrawText(g, Text, Font, textRect, textColor,
+                TextFormatFlags.Left | TextFormatFlags.VerticalCenter | TextFormatFlags.NoPadding);
         }
 
         private static GraphicsPath RoundedRect(Rectangle bounds, int radius)
