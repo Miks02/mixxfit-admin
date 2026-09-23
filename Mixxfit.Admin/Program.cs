@@ -12,7 +12,11 @@ namespace Mixxfit.Admin
         {
             ApplicationConfiguration.Initialize();
 
-            var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+            var config = new ConfigurationBuilder()
+                .SetBasePath(AppContext.BaseDirectory)
+                .AddJsonFile("appsettings.json")
+                .AddJsonFile("appsettings.Development.json", optional: true)
+                .Build();
 
             MixxFitApiClient.Initialize(config["Api:BaseUrl"]!);
 

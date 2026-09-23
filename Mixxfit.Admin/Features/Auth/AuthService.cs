@@ -9,15 +9,15 @@ namespace Mixxfit.Admin.Features.Auth
 {
     public class AuthService(MixxFitApiClient apiClient)
     {
-        public bool isAdmin { get; private set; }
+        public bool IsAdmin { get; private set; }
 
         public async Task<ProblemDetails?> LoginAsync(LoginRequest request)
         {
-            var (data, problem) = await apiClient.SendAsync<AuthResponse>(HttpMethod.Post, "/auth/login", request, allowRefresh: false);
+            var (data, problem) = await apiClient.SendAsync<AuthResponse>(HttpMethod.Post, "auth/login", request, allowRefresh: false);
             if (problem is not null) return problem;
 
             apiClient.SetAccessToken(data!.AccessToken);
-            isAdmin = data!.User.Roles.Any(r => r.Equals("Admin", StringComparison.OrdinalIgnoreCase));
+            IsAdmin = data.User?.Roles?.Any(r => r.Equals("Admin", StringComparison.OrdinalIgnoreCase)) ?? false;
             return null;
         }
 
@@ -29,7 +29,7 @@ namespace Mixxfit.Admin.Features.Auth
             if (problem is not null)
             {
                 apiClient.SetAccessToken(null);
-                isAdmin = false;
+                IsAdmin = false;
                 return false;
             }
 
@@ -41,7 +41,7 @@ namespace Mixxfit.Admin.Features.Auth
         {
             await apiClient.SendAsync(HttpMethod.Post, "auth/logout", null, allowRefresh: false);
             apiClient.SetAccessToken(null);
-            isAdmin = false;
+            IsAdmin = false;
         }
     }
 }
