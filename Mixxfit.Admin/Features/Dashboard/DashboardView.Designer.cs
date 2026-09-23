@@ -55,6 +55,12 @@ namespace Mixxfit.Admin.Features.Dashboard
             tbSearch = new TextBox();
             cbSort = new ComboBox();
             chkDeleted = new CheckBox();
+            btnRefetch = new Common.Controls.RoundedButton();
+            pnlPager = new Panel();
+            lblTotal = new Label();
+            btnPrev = new Common.Controls.RoundedButton();
+            lblPage = new Label();
+            btnNext = new Common.Controls.RoundedButton();
             pnlSide = new Panel();
             gbUserOptions = new Common.Controls.CardGroupBox();
             tlpUser = new TableLayoutPanel();
@@ -75,6 +81,7 @@ namespace Mixxfit.Admin.Features.Dashboard
             pnlGridCard.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgUsers).BeginInit();
             pnlFilters.SuspendLayout();
+            pnlPager.SuspendLayout();
             pnlSide.SuspendLayout();
             gbUserOptions.SuspendLayout();
             tlpUser.SuspendLayout();
@@ -201,6 +208,7 @@ namespace Mixxfit.Admin.Features.Dashboard
             //
             pnlGridCard.BackColor = Color.Transparent;
             pnlGridCard.Controls.Add(dgUsers);
+            pnlGridCard.Controls.Add(pnlPager);
             pnlGridCard.Controls.Add(pnlFilters);
             pnlGridCard.Dock = DockStyle.Fill;
             pnlGridCard.Location = new Point(8, 8);
@@ -212,13 +220,15 @@ namespace Mixxfit.Admin.Features.Dashboard
             //
             // pnlFilters
             //
-            pnlFilters.BackColor = Color.Transparent;
+            pnlFilters.BackColor = Color.White;
+            pnlFilters.Controls.Add(btnRefetch);
             pnlFilters.Controls.Add(chkDeleted);
             pnlFilters.Controls.Add(cbSort);
             pnlFilters.Controls.Add(tbSearch);
             pnlFilters.Dock = DockStyle.Top;
             pnlFilters.Location = new Point(16, 16);
             pnlFilters.Name = "pnlFilters";
+            pnlFilters.Padding = new Padding(0, 8, 0, 8);
             pnlFilters.Size = new Size(1196, 52);
             pnlFilters.TabIndex = 0;
             //
@@ -263,6 +273,102 @@ namespace Mixxfit.Admin.Features.Dashboard
             chkDeleted.Text = "Show deleted";
             chkDeleted.UseVisualStyleBackColor = true;
             chkDeleted.CheckedChanged += chkDeleted_CheckedChanged;
+            //
+            // btnRefetch
+            //
+            btnRefetch.BackColor = Color.FromArgb(30, 41, 59);
+            btnRefetch.CornerRadius = 8;
+            btnRefetch.DisabledBackColor = Color.FromArgb(226, 232, 240);
+            btnRefetch.DisabledForeColor = Color.FromArgb(148, 163, 184);
+            btnRefetch.Dock = DockStyle.Right;
+            btnRefetch.FlatAppearance.BorderSize = 0;
+            btnRefetch.FlatStyle = FlatStyle.Flat;
+            btnRefetch.Font = new Font("Segoe UI Semibold", 10F);
+            btnRefetch.ForeColor = Color.White;
+            btnRefetch.HoverColor = Color.FromArgb(51, 65, 85);
+            btnRefetch.Name = "btnRefetch";
+            btnRefetch.PressedColor = Color.FromArgb(15, 23, 42);
+            btnRefetch.Size = new Size(110, 36);
+            btnRefetch.TabIndex = 3;
+            btnRefetch.Text = "Refetch";
+            btnRefetch.UseVisualStyleBackColor = false;
+            btnRefetch.Click += btnRefetch_Click;
+            //
+            // pnlPager
+            //
+            pnlPager.BackColor = Color.White;
+            pnlPager.Controls.Add(lblTotal);
+            pnlPager.Controls.Add(btnPrev);
+            pnlPager.Controls.Add(lblPage);
+            pnlPager.Controls.Add(btnNext);
+            pnlPager.Dock = DockStyle.Bottom;
+            pnlPager.Location = new Point(16, 472);
+            pnlPager.Name = "pnlPager";
+            pnlPager.Padding = new Padding(0, 12, 0, 0);
+            pnlPager.Size = new Size(1196, 56);
+            pnlPager.TabIndex = 2;
+            //
+            // lblTotal
+            //
+            lblTotal.Dock = DockStyle.Fill;
+            lblTotal.Font = new Font("Segoe UI", 10F);
+            lblTotal.ForeColor = Color.FromArgb(100, 116, 139);
+            lblTotal.Name = "lblTotal";
+            lblTotal.TabIndex = 0;
+            lblTotal.TextAlign = ContentAlignment.MiddleLeft;
+            //
+            // btnPrev
+            //
+            btnPrev.BackColor = Color.FromArgb(30, 41, 59);
+            btnPrev.CornerRadius = 8;
+            btnPrev.DisabledBackColor = Color.FromArgb(226, 232, 240);
+            btnPrev.DisabledForeColor = Color.FromArgb(148, 163, 184);
+            btnPrev.Dock = DockStyle.Right;
+            btnPrev.Enabled = false;
+            btnPrev.FlatAppearance.BorderSize = 0;
+            btnPrev.FlatStyle = FlatStyle.Flat;
+            btnPrev.Font = new Font("Segoe UI Semibold", 10F);
+            btnPrev.ForeColor = Color.White;
+            btnPrev.HoverColor = Color.FromArgb(51, 65, 85);
+            btnPrev.Name = "btnPrev";
+            btnPrev.PressedColor = Color.FromArgb(15, 23, 42);
+            btnPrev.Size = new Size(100, 44);
+            btnPrev.TabIndex = 1;
+            btnPrev.Text = "Previous";
+            btnPrev.UseVisualStyleBackColor = false;
+            btnPrev.Click += btnPrev_Click;
+            //
+            // lblPage
+            //
+            lblPage.Dock = DockStyle.Right;
+            lblPage.Font = new Font("Segoe UI Semibold", 10F);
+            lblPage.ForeColor = Color.FromArgb(30, 41, 59);
+            lblPage.Name = "lblPage";
+            lblPage.Size = new Size(140, 44);
+            lblPage.TabIndex = 2;
+            lblPage.Text = "Page 1 of 1";
+            lblPage.TextAlign = ContentAlignment.MiddleCenter;
+            //
+            // btnNext
+            //
+            btnNext.BackColor = Color.FromArgb(30, 41, 59);
+            btnNext.CornerRadius = 8;
+            btnNext.DisabledBackColor = Color.FromArgb(226, 232, 240);
+            btnNext.DisabledForeColor = Color.FromArgb(148, 163, 184);
+            btnNext.Dock = DockStyle.Right;
+            btnNext.Enabled = false;
+            btnNext.FlatAppearance.BorderSize = 0;
+            btnNext.FlatStyle = FlatStyle.Flat;
+            btnNext.Font = new Font("Segoe UI Semibold", 10F);
+            btnNext.ForeColor = Color.White;
+            btnNext.HoverColor = Color.FromArgb(51, 65, 85);
+            btnNext.Name = "btnNext";
+            btnNext.PressedColor = Color.FromArgb(15, 23, 42);
+            btnNext.Size = new Size(100, 44);
+            btnNext.TabIndex = 3;
+            btnNext.Text = "Next";
+            btnNext.UseVisualStyleBackColor = false;
+            btnNext.Click += btnNext_Click;
             //
             // dgUsers
             //
@@ -605,6 +711,7 @@ namespace Mixxfit.Admin.Features.Dashboard
             ((System.ComponentModel.ISupportInitialize)dgUsers).EndInit();
             pnlFilters.ResumeLayout(false);
             pnlFilters.PerformLayout();
+            pnlPager.ResumeLayout(false);
             pnlSide.ResumeLayout(false);
             gbUserOptions.ResumeLayout(false);
             tlpUser.ResumeLayout(false);
@@ -629,6 +736,12 @@ namespace Mixxfit.Admin.Features.Dashboard
         private TextBox tbSearch;
         private ComboBox cbSort;
         private CheckBox chkDeleted;
+        private Common.Controls.RoundedButton btnRefetch;
+        private Panel pnlPager;
+        private Label lblTotal;
+        private Common.Controls.RoundedButton btnPrev;
+        private Label lblPage;
+        private Common.Controls.RoundedButton btnNext;
         private DataGridView dgUsers;
         private DataGridViewTextBoxColumn colName;
         private DataGridViewTextBoxColumn colEmail;

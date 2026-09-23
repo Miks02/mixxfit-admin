@@ -17,6 +17,7 @@ namespace Mixxfit.Admin.Features.Dashboard
         private DashboardService _dashboard = null!;
         private int _loadTicket;
         private bool _loadedDeleted;
+        private int _page = 1;
 
         public DashboardView()
         {
@@ -49,9 +50,10 @@ namespace Mixxfit.Admin.Features.Dashboard
             }
         }
 
-        public async Task LoadPagedUsers()
+        public async Task LoadPagedUsers(int? page = null)
         {
             var ticket = ++_loadTicket;
+            var requestedPage = page ?? _page;
             var search = tbSearch.Text.Trim();
             var sort = SortKeys[Math.Max(cbSort.SelectedIndex, 0)];
             var isDeleted = chkDeleted.Checked;
@@ -61,7 +63,7 @@ namespace Mixxfit.Admin.Features.Dashboard
             try
             {
                 var (data, problem) = await _dashboard.GetAdminDashboardUsersAsync(
-                    search: search, sort: sort, isDeleted: isDeleted);
+                    page: requestedPage, search: search, sort: sort, isDeleted: isDeleted);
 
                 if (ticket != _loadTicket) return;
 
@@ -72,7 +74,9 @@ namespace Mixxfit.Admin.Features.Dashboard
                 }
 
                 _loadedDeleted = isDeleted;
-                RefillDataGrid(data!.Items);
+                _page = data!.Page;
+                RefillDataGrid(data.Items);
+                UpdatePager(data);
             }
             finally
             {
@@ -100,6 +104,40 @@ namespace Mixxfit.Admin.Features.Dashboard
                 HideUserOptions();
         }
 
+        private void UpdatePager(PagedResult<AdminDashboardUserDto> result)
+        {
+            var totalPages = Math.Max(result.TotalPages, 1);
+
+            lblPage.Text = $"Page {result.Page} of {totalPages}";
+            lblTotal.Text = $"Showing {result.Items.Count} of {result.TotalCount:N0} users";
+            btnPrev.Enabled = result.HasPreviousPage;
+            btnNext.Enabled = result.HasNextPage;
+        }
+
+        private async void btnPrev_Click(object? sender, EventArgs e)
+        {
+            await LoadPagedUsers(_page - 1);
+        }
+
+        private async void btnNext_Click(object? sender, EventArgs e)
+        {
+            await LoadPagedUsers(_page + 1);
+        }
+
+        private async void btnRefetch_Click(object? sender, EventArgs e)
+        {
+            btnRefetch.Enabled = false;
+            try
+            {
+                await LoadDataAsync();
+                await LoadPagedUsers();
+            }
+            finally
+            {
+                btnRefetch.Enabled = true;
+            }
+        }
+
         private void tbSearch_TextChanged(object? sender, EventArgs e)
         {
             tmrSearch.Stop();
@@ -109,17 +147,17 @@ namespace Mixxfit.Admin.Features.Dashboard
         private async void tmrSearch_Tick(object? sender, EventArgs e)
         {
             tmrSearch.Stop();
-            await LoadPagedUsers();
+            await LoadPagedUsers(1);
         }
 
         private async void cbSort_SelectedIndexChanged(object? sender, EventArgs e)
         {
-            await LoadPagedUsers();
+            await LoadPagedUsers(1);
         }
 
         private async void chkDeleted_CheckedChanged(object? sender, EventArgs e)
         {
-            await LoadPagedUsers();
+            await LoadPagedUsers(1);
         }
 
         private void dgUsers_CellFormatting(object? sender, DataGridViewCellFormattingEventArgs e)
