@@ -52,7 +52,7 @@ namespace Mixxfit.Admin.Features.Auth
                 return;
             }
 
-            if (!_auth.isAdmin)
+            if (!_auth.IsAdmin)
             {
                 UseWaitCursor = false;
                 btnLogin.Enabled = true;
