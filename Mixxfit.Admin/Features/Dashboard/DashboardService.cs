@@ -20,7 +20,7 @@ namespace Mixxfit.Admin.Features.Dashboard
             pageSize = Math.Clamp(pageSize, 1, MaxPageSize);
 
             return apiClient.SendAsync<PagedResult<AdminDashboardUserDto>>(
-                HttpMethod.Get, $"admin/users?page={page}&pageSize={pageSize}&search={search}&sort={sort}&isDeleted={isDeleted}");
+                HttpMethod.Get, $"admin/users?page={page}&pageSize={pageSize}&search={Uri.EscapeDataString(search)}&sort={sort}&isDeleted={isDeleted}");
         }
     }
 }

@@ -43,7 +43,7 @@
             pnlHeader.Dock = DockStyle.Top;
             pnlHeader.Location = new Point(0, 0);
             pnlHeader.Name = "pnlHeader";
-            pnlHeader.Size = new Size(1357, 64);
+            pnlHeader.Size = new Size(1728, 64);
             pnlHeader.TabIndex = 0;
             // 
             // btnLogout
@@ -58,7 +58,7 @@
             btnLogout.Font = new Font("Segoe UI Semibold", 10F);
             btnLogout.ForeColor = Color.White;
             btnLogout.HoverColor = Color.FromArgb(51, 65, 85);
-            btnLogout.Location = new Point(1237, 14);
+            btnLogout.Location = new Point(1608, 14);
             btnLogout.Name = "btnLogout";
             btnLogout.PressedColor = Color.FromArgb(15, 23, 42);
             btnLogout.Size = new Size(96, 36);
@@ -83,7 +83,7 @@
             pnlContent.Dock = DockStyle.Fill;
             pnlContent.Location = new Point(0, 64);
             pnlContent.Name = "pnlContent";
-            pnlContent.Size = new Size(1357, 812);
+            pnlContent.Size = new Size(1728, 812);
             pnlContent.TabIndex = 1;
             // 
             // Main
@@ -91,10 +91,10 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ScrollBar;
-            ClientSize = new Size(1357, 876);
+            ClientSize = new Size(1728, 876);
             Controls.Add(pnlContent);
             Controls.Add(pnlHeader);
-            MinimumSize = new Size(700, 400);
+            MinimumSize = new Size(1280, 760);
             Name = "Main";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "MixxFit";
