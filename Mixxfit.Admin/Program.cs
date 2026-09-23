@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Mixxfit.Admin.Api;
+using Mixxfit.Admin.Common;
 using Mixxfit.Admin.Features.Auth;
 
 namespace Mixxfit.Admin
@@ -18,17 +19,24 @@ namespace Mixxfit.Admin
                 .AddJsonFile("appsettings.Development.json", optional: true)
                 .Build();
 
-            MixxFitApiClient.Initialize(config["Api:BaseUrl"]!);
+            ApiEnvironment.Initialize(config);
+            MixxFitApiClient.Initialize(ApiEnvironment.CurrentUrl);
 
             var auth = new AuthService(MixxFitApiClient.Instance);
-            MixxFitApiClient.Instance.RefreshCallback = auth.TryRefreshAsync; 
+            MixxFitApiClient.Instance.RefreshCallback = auth.TryRefreshAsync;
 
-            using (var login = new LoginForm(auth))
+            bool switchedEnvironment;
+            do
             {
-                if (login.ShowDialog() != DialogResult.OK) return;
-            }
+                using (var login = new LoginForm(auth))
+                {
+                    if (login.ShowDialog() != DialogResult.OK) return;
+                }
 
-            Application.Run(new Main(auth));
+                var main = new Main(auth);
+                Application.Run(main);
+                switchedEnvironment = main.SwitchedEnvironment;
+            } while (switchedEnvironment);
         }
     }
 }

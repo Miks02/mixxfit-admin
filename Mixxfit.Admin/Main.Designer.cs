@@ -30,6 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             pnlHeader = new Panel();
+            btnEnvironment = new Mixxfit.Admin.Common.Controls.RoundedButton();
             btnLogout = new Mixxfit.Admin.Common.Controls.RoundedButton();
             lblTitle = new Label();
             pnlContent = new Panel();
@@ -39,6 +40,7 @@
             // pnlHeader
             // 
             pnlHeader.BackColor = Color.FromArgb(251, 191, 36);
+            pnlHeader.Controls.Add(btnEnvironment);
             pnlHeader.Controls.Add(btnLogout);
             pnlHeader.Controls.Add(lblTitle);
             pnlHeader.Dock = DockStyle.Top;
@@ -46,9 +48,30 @@
             pnlHeader.Name = "pnlHeader";
             pnlHeader.Size = new Size(1728, 64);
             pnlHeader.TabIndex = 0;
-            // 
+            //
+            // btnEnvironment
+            //
+            btnEnvironment.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnEnvironment.BackColor = Color.FromArgb(30, 41, 59);
+            btnEnvironment.CornerRadius = 8;
+            btnEnvironment.DisabledBackColor = Color.FromArgb(100, 116, 139);
+            btnEnvironment.DisabledForeColor = Color.FromArgb(203, 213, 225);
+            btnEnvironment.FlatAppearance.BorderSize = 0;
+            btnEnvironment.FlatStyle = FlatStyle.Flat;
+            btnEnvironment.Font = new Font("Segoe UI Semibold", 10F);
+            btnEnvironment.ForeColor = Color.White;
+            btnEnvironment.HoverColor = Color.FromArgb(51, 65, 85);
+            btnEnvironment.Location = new Point(1478, 14);
+            btnEnvironment.Name = "btnEnvironment";
+            btnEnvironment.PressedColor = Color.FromArgb(15, 23, 42);
+            btnEnvironment.Size = new Size(118, 36);
+            btnEnvironment.TabIndex = 2;
+            btnEnvironment.Text = "Local";
+            btnEnvironment.UseVisualStyleBackColor = false;
+            btnEnvironment.Click += btnEnvironment_Click;
+            //
             // btnLogout
-            // 
+            //
             btnLogout.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnLogout.BackColor = Color.FromArgb(30, 41, 59);
             btnLogout.CornerRadius = 8;
@@ -110,6 +133,7 @@
 
         private Panel pnlHeader;
         private Label lblTitle;
+        private Common.Controls.RoundedButton btnEnvironment;
         private Common.Controls.RoundedButton btnLogout;
         private Panel pnlContent;
     }

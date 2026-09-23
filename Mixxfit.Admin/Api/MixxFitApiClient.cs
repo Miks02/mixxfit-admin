@@ -22,20 +22,32 @@ namespace Mixxfit.Admin.Api
         internal static readonly JsonSerializerOptions JsonOptions =
             new(JsonSerializerDefaults.Web) { Converters = { new JsonStringEnumConverter() } };
 
-        private readonly HttpClient _http;
+        private HttpClient _http;
         private string? _accessToken;
 
         public Func<Task<bool>>? RefreshCallback { get; set; }
 
         private MixxFitApiClient(string baseUrl)
         {
+            _http = CreateHttpClient(baseUrl);
+        }
+
+        private static HttpClient CreateHttpClient(string baseUrl)
+        {
             if (!baseUrl.EndsWith('/')) baseUrl += '/';
 
-            _http = new HttpClient(new HttpClientHandler { CookieContainer = new CookieContainer() })
+            return new HttpClient(new HttpClientHandler { CookieContainer = new CookieContainer() })
             {
                 BaseAddress = new Uri(baseUrl),
                 Timeout = TimeSpan.FromSeconds(30)
             };
+        }
+        public void SwitchBaseUrl(string baseUrl)
+        {
+            var old = _http;
+            _http = CreateHttpClient(baseUrl);
+            _accessToken = null;
+            old.Dispose();
         }
 
         public void SetAccessToken(string? token)
