@@ -1,0 +1,76 @@
+# ---------------------------------------------------------------------------
+# MixxFit.Admin — WinForms / .NET 10
+#
+# NOTE: *.resx and *.Designer.cs are Designer output and MUST be committed.
+#       Never add them here — the forms will not build without them.
+# ---------------------------------------------------------------------------
+
+# Binary files
+**/*.pdb
+**/*.dll
+**/*.exe
+**/*.cache
+**/*.obj
+**/*.o
+**/*.user
+**/*.log
+**/*.bak
+**/*.nupkg
+**/*.snk
+
+# Build / Output directories
+[Dd]ebug/
+[Rr]elease/
+[Bb]in/
+[Oo]bj/
+[Tt]emp/
+[Tt]mp/
+.vs/
+.history/
+
+# IDE / Editor files
+*.suo
+*.user
+*.userprefs
+*.DS_Store
+Thumbs.db
+Rider.Backend.log
+*.iml
+
+# Rider / JetBrains specific files
+.idea/
+*.iws
+
+# NuGet
+/packages/
+/artifacts/
+
+# Publish output
+publish/
+[Pp]ublish[Oo]utput/
+*.publishsettings
+**/Properties/PublishProfiles/*.user
+
+# ClickOnce
+*.application
+*.manifest
+*.deploy
+
+# Local configuration — appsettings.json itself IS committed (base URL only),
+# environment overrides are not.
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.local.json
+
+# Secrets — nothing credential-bearing belongs in this repo at all
+secrets.json
+*.pfx
+*.p12
+
+# Serilog file sink output
+logs/
+
+# Test results
+TestResults/
+*.trx
+*.http
