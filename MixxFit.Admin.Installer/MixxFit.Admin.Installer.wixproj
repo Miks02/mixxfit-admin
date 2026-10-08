@@ -1,0 +1,22 @@
+<Project Sdk="WixToolset.Sdk/5.0.2">
+
+  <PropertyGroup>
+    <OutputName>MixxFit.Admin.Setup</OutputName>
+    <OutputType>Package</OutputType>
+    <InstallerPlatform>x64</InstallerPlatform>
+    <ProductVersion Condition="'$(ProductVersion)' == ''">1.0.0</ProductVersion>
+    <AppProject>$(MSBuildProjectDirectory)\..\Mixxfit.Admin\Mixxfit.Admin.csproj</AppProject>
+    <AppPublishDir>$(MSBuildProjectDirectory)\obj\publish\</AppPublishDir>
+    <DefineConstants>ProductVersion=$(ProductVersion);PublishDir=$(AppPublishDir);AppDir=$(MSBuildProjectDirectory)\..\Mixxfit.Admin\</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WixToolset.UI.wixext" Version="5.0.2" />
+  </ItemGroup>
+
+  <Target Name="PublishApp" BeforeTargets="CoreCompile">
+    <RemoveDir Directories="$(AppPublishDir)" />
+    <Exec Command="dotnet publish &quot;$(AppProject)&quot; -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -p:Version=$(ProductVersion) -o &quot;$(AppPublishDir.TrimEnd('\'))&quot; --nologo" />
+  </Target>
+
+</Project>
