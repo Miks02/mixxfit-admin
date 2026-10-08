@@ -19,7 +19,7 @@ namespace Mixxfit.Admin.Common
         public static void Initialize(IConfiguration config)
         {
             _localUrl = Normalize(config["Api:BaseUrl"]!);
-            CurrentUrl = _localUrl;
+            CurrentUrl = ProductionUrl;
         }
 
         public static string Toggle()
